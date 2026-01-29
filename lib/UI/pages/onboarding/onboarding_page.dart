@@ -52,6 +52,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
       userId: user.id,
       displayName: user.email?.split('@').first ?? 'User',
       email: user.email ?? '',
+
+      // Academic info (defaults for now, will add UI in next step)
+      institution: '', // Will be collected in new onboarding page
+      country: '', // Will be collected in new onboarding page
+      // Schedule
       studyHours: TimeRange(
         start: _formatTimeOfDay(_studyStart),
         end: _formatTimeOfDay(_studyEnd),
@@ -82,7 +87,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F6),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           children: [
@@ -97,8 +102,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
                       decoration: BoxDecoration(
                         color: index <= _currentPage
-                            ? const Color(0xFF2E7D32)
-                            : Colors.green.withOpacity(0.1),
+                            ? const Color(0xFF1976D2)
+                            : Colors.blue.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -154,10 +159,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E7D32),
+                      backgroundColor: const Color(0xFF1976D2),
                       foregroundColor: Colors.white,
                       elevation: 4,
-                      shadowColor: Colors.green.withOpacity(0.4),
+                      shadowColor: Colors.blue.withOpacity(0.4),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,
@@ -196,7 +201,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.green.withOpacity(0.1),
+                      color: Colors.blue.withOpacity(0.1),
                       blurRadius: 30,
                       offset: const Offset(0, 10),
                     ),
@@ -205,14 +210,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 child: const Icon(
                   Icons.psychology_outlined,
                   size: 80,
-                  color: Color(0xFF2E7D32),
+                  color: Color(0xFF1976D2),
                 ),
               ),
               const SizedBox(height: 32),
               const AppText.hero(
                 'Welcome to Doom Breaker',
                 textAlign: TextAlign.center,
-                color: Color(0xFF1B5E20),
+                color: Color(0xFF0D47A1),
               ),
               const SizedBox(height: 16),
               AppText.body(
@@ -251,17 +256,17 @@ class _OnboardingPageState extends State<OnboardingPage> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: const Color(0xFFE8F5E9),
+            color: const Color(0xFFE3F2FD),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(icon, color: const Color(0xFF2E7D32)),
+          child: Icon(icon, color: const Color(0xFF1976D2)),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              AppText.action(title, color: const Color(0xFF1B5E20)),
+              AppText.action(title, color: const Color(0xFF0D47A1)),
               const SizedBox(height: 4),
               AppText.bodySmall(description, color: const Color(0xFF546E7A)),
             ],
@@ -278,7 +283,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 32),
-          const AppText.hero('Set Your Schedule', color: Color(0xFF1B5E20)),
+          const AppText.hero('Set Your Schedule', color: Color(0xFF0D47A1)),
           const SizedBox(height: 8),
           AppText.body(
             'When do you usually study and sleep? This helps us provide better reminders.',
@@ -287,7 +292,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 40),
 
           // Study hours
-          AppText.action('Study Hours', color: const Color(0xFF2E7D32)),
+          AppText.action('Study Hours', color: const Color(0xFF1976D2)),
           const SizedBox(height: 16),
           _buildTimeRangePicker(
             'Start',
@@ -303,7 +308,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 32),
 
           // Sleep hours
-          AppText.action('Sleep Hours', color: const Color(0xFF2E7D32)),
+          AppText.action('Sleep Hours', color: const Color(0xFF1976D2)),
           const SizedBox(height: 16),
           _buildTimeRangePicker(
             'Bedtime',
@@ -319,7 +324,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 32),
 
           // Institution hours
-          AppText.action('Institution Hours', color: const Color(0xFF2E7D32)),
+          AppText.action('Institution Hours', color: const Color(0xFF1976D2)),
           const SizedBox(height: 16),
           _buildTimeRangePicker(
             'Start',
@@ -351,9 +356,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
             return Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: const ColorScheme.light(
-                  primary: Color(0xFF2E7D32),
+                  primary: Color(0xFF1976D2),
                   onPrimary: Colors.white,
-                  onSurface: Color(0xFF1B5E20),
+                  onSurface: Color(0xFF0D47A1),
                 ),
               ),
               child: child!,
@@ -369,7 +374,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.green.withOpacity(0.1)),
+          border: Border.all(color: Colors.blue.withOpacity(0.1)),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         child: Row(
@@ -380,10 +385,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               children: [
                 AppText.action(
                   time.format(context),
-                  color: const Color(0xFF1B5E20),
+                  color: const Color(0xFF0D47A1),
                 ),
                 const SizedBox(width: 8),
-                const Icon(Icons.arrow_drop_down, color: Color(0xFF2E7D32)),
+                const Icon(Icons.arrow_drop_down, color: Color(0xFF1976D2)),
               ],
             ),
           ],
@@ -403,10 +408,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
               const Icon(
                 Icons.emoji_events_outlined,
                 size: 80,
-                color: Color(0xFF2E7D32),
+                color: Color(0xFF1976D2),
               ),
               const SizedBox(height: 32),
-              const AppText.hero('Daily Focus Goal', color: Color(0xFF1B5E20)),
+              const AppText.hero('Daily Focus Goal', color: Color(0xFF0D47A1)),
               const SizedBox(height: 16),
               AppText.body(
                 'How many hours do you want to focus each day?',
@@ -417,7 +422,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
               AppText.hero(
                 '${(_focusGoalMinutes / 60).toStringAsFixed(1)} hours',
-                color: const Color(0xFF2E7D32),
+                color: const Color(0xFF1976D2),
               ),
               const SizedBox(height: 24),
 
@@ -426,9 +431,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 min: 60,
                 max: 720,
                 divisions: 22,
-                activeColor: const Color(0xFF2E7D32),
-                thumbColor: const Color(0xFF2E7D32),
-                inactiveColor: const Color(0xFF2E7D32).withOpacity(0.2),
+                activeColor: const Color(0xFF1976D2),
+                thumbColor: const Color(0xFF1976D2),
+                inactiveColor: const Color(0xFF1976D2).withOpacity(0.2),
                 label: '${(_focusGoalMinutes / 60).toStringAsFixed(1)} hrs',
                 onChanged: (value) {
                   setState(() => _focusGoalMinutes = value.round());

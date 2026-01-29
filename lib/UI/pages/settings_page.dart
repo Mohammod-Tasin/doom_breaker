@@ -105,7 +105,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Settings saved successfully!'),
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.blue,
           ),
         );
       }
@@ -141,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const AppText.action('Save', color: Color(0xFF2E7D32)),
+                : const AppText.action('Save', color: Color(0xFF1976D2)),
           ),
           const SizedBox(width: 8),
         ],
@@ -188,9 +188,9 @@ class _SettingsPageState extends State<SettingsPage> {
               min: 60,
               max: 720,
               divisions: 22,
-              activeColor: const Color(0xFF2E7D32),
-              thumbColor: const Color(0xFF2E7D32),
-              inactiveColor: const Color(0xFF2E7D32).withOpacity(0.2),
+              activeColor: const Color(0xFF1976D2),
+              thumbColor: const Color(0xFF1976D2),
+              inactiveColor: const Color(0xFF1976D2).withOpacity(0.2),
               label: '${(_focusGoalMinutes / 60).toStringAsFixed(1)} hrs',
               onChanged: (value) {
                 setState(() => _focusGoalMinutes = value.round());
@@ -210,20 +210,20 @@ class _SettingsPageState extends State<SettingsPage> {
               leading: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8F5E9), // Green 50
+                  color: const Color(0xFFE3F2FD), // Light Blue 50
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(Icons.security, color: Color(0xFF2E7D32)),
+                child: const Icon(Icons.security, color: Color(0xFF1976D2)),
               ),
               trailing: const Icon(
                 Icons.arrow_forward_ios,
                 size: 16,
-                color: Color(0xFF2E7D32),
+                color: Color(0xFF1976D2),
               ),
               tileColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
-                side: BorderSide(color: Colors.green.withOpacity(0.1)),
+                side: BorderSide(color: Colors.blue.withOpacity(0.1)),
               ),
               onTap: () {
                 Navigator.of(context).pushNamed(PermissionGuidePage.name);
@@ -246,7 +246,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildSectionHeader(String title) {
-    return AppText.hero(title, fontSize: 20, color: const Color(0xFF1B5E20));
+    return AppText.hero(title, fontSize: 20, color: const Color(0xFF0D47A1));
   }
 
   Widget _buildTimeSection(
@@ -258,7 +258,7 @@ class _SettingsPageState extends State<SettingsPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AppText.action(title, color: const Color(0xFF2E7D32)),
+        AppText.action(title, color: const Color(0xFF1976D2)),
         const SizedBox(height: 8),
         Row(
           children: [
@@ -298,9 +298,9 @@ class _SettingsPageState extends State<SettingsPage> {
             return Theme(
               data: Theme.of(context).copyWith(
                 colorScheme: const ColorScheme.light(
-                  primary: Color(0xFF2E7D32),
+                  primary: Color(0xFF1976D2),
                   onPrimary: Colors.white,
-                  onSurface: Color(0xFF1B5E20),
+                  onSurface: Color(0xFF0D47A1),
                 ),
               ),
               child: child!,
@@ -317,7 +317,7 @@ class _SettingsPageState extends State<SettingsPage> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.green.withOpacity(0.15)),
+          border: Border.all(color: Colors.blue.withOpacity(0.15)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -330,14 +330,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 AppText.body(
                   time.format(context),
                   fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1B5E20),
+                  color: const Color(0xFF0D47A1),
                 ),
               ],
             ),
             Icon(
               Icons.access_time_rounded,
               size: 20,
-              color: const Color(0xFF66BB6A),
+              color: const Color(0xFF64B5F6),
             ),
           ],
         ),

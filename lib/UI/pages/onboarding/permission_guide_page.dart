@@ -75,15 +75,15 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F6),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const AppText.action(
           'Permissions Setup',
-          color: Color(0xFF1B5E20),
+          color: Color(0xFF0D47A1),
         ),
-        backgroundColor: const Color(0xFFF5F9F6),
+        backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFF1B5E20)),
+        iconTheme: const IconThemeData(color: Color(0xFF0D47A1)),
       ),
       body: SafeArea(
         child: Column(
@@ -100,7 +100,7 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.green.withOpacity(0.15),
+                            color: Colors.blue.withOpacity(0.15),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -109,7 +109,7 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                       child: const Icon(
                         Icons.security_rounded,
                         size: 64,
-                        color: Color(0xFF2E7D32),
+                        color: Color(0xFF1976D2),
                       ),
                     ),
                   ),
@@ -117,7 +117,7 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                   const AppText.hero(
                     'Grant Permissions',
                     textAlign: TextAlign.center,
-                    color: Color(0xFF1B5E20),
+                    color: Color(0xFF0D47A1),
                   ),
                   const SizedBox(height: 12),
                   AppText.body(
@@ -202,21 +202,21 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE8F5E9),
+                      color: const Color(0xFFE3F2FD),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.green.withOpacity(0.1)),
+                      border: Border.all(color: Colors.blue.withOpacity(0.1)),
                     ),
                     child: Row(
                       children: [
                         const Icon(
                           Icons.info_outline_rounded,
-                          color: Color(0xFF2E7D32),
+                          color: Color(0xFF1976D2),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: AppText.bodySmall(
                             'All data stays on your device. We never collect personal information.',
-                            color: const Color(0xFF2E7D32),
+                            color: const Color(0xFF1976D2),
                           ),
                         ),
                       ],
@@ -241,12 +241,12 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E7D32),
+                      backgroundColor: const Color(0xFF1976D2),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       minimumSize: const Size(double.infinity, 50),
                       elevation: 4,
-                      shadowColor: Colors.green.withOpacity(0.4),
+                      shadowColor: Colors.blue.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -280,15 +280,15 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isGranted
-              ? const Color(0xFF66BB6A)
-              : const Color(0xFFD32F2F), // Red border for ungra nted
+              ? const Color(0xFF42A5F5)
+              : const Color(0xFFD32F2F), // Red border for ungranted
           width: 2,
         ),
         boxShadow: [
           BoxShadow(
             color: isGranted
-                ? Colors.green.withOpacity(0.1)
-                : Colors.red.withOpacity(0.15), // Red shadow for ungra nted
+                ? Colors.blue.withOpacity(0.1)
+                : Colors.red.withOpacity(0.15), // Red shadow for ungranted
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -303,15 +303,15 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: isGranted
-                      ? const Color(0xFFE8F5E9)
-                      : const Color(0xFFFFEBEE), // Light red for ungra nted
+                      ? const Color(0xFFE3F2FD)
+                      : const Color(0xFFFFEBEE), // Light red for ungranted
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
                   icon,
                   color: isGranted
-                      ? const Color(0xFF2E7D32)
-                      : const Color(0xFFD32F2F), // Red icon for ungra nted
+                      ? const Color(0xFF1976D2)
+                      : const Color(0xFFD32F2F), // Red icon for ungranted
                 ),
               ),
               const SizedBox(width: 16),
@@ -319,12 +319,12 @@ class _PermissionGuidePageState extends State<PermissionGuidePage>
                 child: AppText.action(
                   title,
                   color: isGranted
-                      ? const Color(0xFF1B5E20)
-                      : const Color(0xFFD32F2F), // Red title for ungra nted
+                      ? const Color(0xFF0D47A1)
+                      : const Color(0xFFD32F2F), // Red title for ungranted
                 ),
               ),
               if (isGranted)
-                const Icon(Icons.check_circle_rounded, color: Color(0xFF2E7D32))
+                const Icon(Icons.check_circle_rounded, color: Color(0xFF1976D2))
               else
                 const Icon(
                   Icons.warning_rounded,

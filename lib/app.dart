@@ -20,23 +20,23 @@ class DoomBreakerApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E7D32), // Forest Green
-          primary: const Color(0xFF2E7D32),
-          secondary: const Color(0xFF66BB6A), // Fresh Green
-          surface: const Color(0xFFF5F9F6), // Minty White Background
+          seedColor: const Color(0xFF1976D2), // Professional Blue
+          primary: const Color(0xFF1976D2),
+          secondary: const Color(0xFF42A5F5), // Light Blue
+          surface: Colors.white, // Clean White Background
           error: const Color(0xFFD32F2F),
-          background: const Color(0xFFF5F9F6),
+          background: Colors.white,
         ),
-        scaffoldBackgroundColor: const Color(0xFFF5F9F6),
+        scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFF5F9F6),
-          foregroundColor: Color(0xFF1B5E20), // Dark Green text
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF0D47A1), // Dark Blue text
           elevation: 0,
           centerTitle: true,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF2E7D32),
+            backgroundColor: const Color(0xFF1976D2),
             foregroundColor: Colors.white,
             elevation: 2,
             shape: RoundedRectangleBorder(
@@ -47,7 +47,7 @@ class DoomBreakerApp extends StatelessWidget {
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
-            foregroundColor: const Color(0xFF2E7D32),
+            foregroundColor: const Color(0xFF1976D2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
@@ -62,11 +62,11 @@ class DoomBreakerApp extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: Colors.green.withOpacity(0.1)),
+            borderSide: BorderSide(color: Colors.blue.withOpacity(0.1)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF2E7D32), width: 1.5),
+            borderSide: const BorderSide(color: Color(0xFF1976D2), width: 1.5),
           ),
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,

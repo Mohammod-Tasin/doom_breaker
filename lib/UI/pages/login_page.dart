@@ -86,7 +86,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F6),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -107,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.green.withOpacity(0.15),
+                              color: Colors.blue.withOpacity(0.15),
                               blurRadius: 30,
                               offset: const Offset(0, 10),
                             ),
@@ -116,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Icon(
                           Icons.bolt_rounded,
                           size: 80,
-                          color: Color(0xFF2E7D32),
+                          color: Color(0xFF1976D2),
                         ),
                       ),
                     ),
@@ -126,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
                     const AppText.hero(
                       "Doom Breaker",
                       textAlign: TextAlign.center,
-                      color: Color(0xFF1B5E20),
+                      color: Color(0xFF0D47A1),
                     ),
                     const SizedBox(height: 12),
                     AppText.body(
@@ -189,14 +189,14 @@ class _LoginPageState extends State<LoginPage> {
                     ElevatedButton(
                       onPressed: _isLoading ? null : _signInWithEmail,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF2E7D32),
+                        backgroundColor: const Color(0xFF1976D2),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 18),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 4,
-                        shadowColor: Colors.green.withOpacity(0.4),
+                        shadowColor: Colors.blue.withOpacity(0.4),
                       ),
                       child: _isLoading
                           ? const SizedBox(
@@ -229,7 +229,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                           child: const AppText.action(
                             'Sign Up',
-                            color: Color(0xFF2E7D32),
+                            color: Color(0xFF1976D2),
                           ),
                         ),
                       ],

@@ -136,7 +136,7 @@ class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color(0xFFF5F9F6), Color(0xFFE8F5E9)],
+            colors: [Colors.white, Color(0xFFE3F2FD)],
           ),
         ),
         child: Center(
@@ -152,7 +152,7 @@ class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.green.withOpacity(0.15),
+                        color: Colors.blue.withOpacity(0.15),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -161,14 +161,14 @@ class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
                   child: const Icon(
                     Icons.spa_rounded,
                     size: 64,
-                    color: Color(0xFF2E7D32),
+                    color: Color(0xFF1976D2),
                   ),
                 ),
                 const SizedBox(height: 32),
                 AppText.hero(
                   'Welcome Back,\n$displayName',
                   textAlign: TextAlign.center,
-                  color: const Color(0xFF1B5E20),
+                  color: const Color(0xFF0D47A1),
                 ),
                 const SizedBox(height: 16),
                 Container(
@@ -179,7 +179,7 @@ class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.6),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: Colors.green.withOpacity(0.1)),
+                    border: Border.all(color: Colors.blue.withOpacity(0.1)),
                   ),
                   child: AppText.bodySmall(
                     'Your focus journey continues.',
@@ -231,7 +231,7 @@ class _WelcomePageState extends State<WelcomePage> with WidgetsBindingObserver {
       if (_showSuccess) {
         return FloatingActionButton.extended(
           onPressed: () {},
-          backgroundColor: const Color(0xFF2E7D32),
+          backgroundColor: const Color(0xFF1976D2),
           icon: const Icon(Icons.check_circle_rounded, color: Colors.white),
           elevation: 4,
           label: const Text(

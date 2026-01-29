@@ -47,7 +47,7 @@ class _SignupPageState extends State<SignupPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Account created successfully! Please sign in.'),
-            backgroundColor: Color(0xFF2E7D32),
+            backgroundColor: Color(0xFF1976D2),
             duration: Duration(seconds: 3),
           ),
         );
@@ -71,12 +71,12 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F9F6),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1B5E20)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF0D47A1)),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -99,7 +99,7 @@ class _SignupPageState extends State<SignupPage> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.green.withOpacity(0.15),
+                            color: Colors.blue.withOpacity(0.15),
                             blurRadius: 30,
                             offset: const Offset(0, 10),
                           ),
@@ -108,7 +108,7 @@ class _SignupPageState extends State<SignupPage> {
                       child: const Icon(
                         Icons.person_add_outlined,
                         size: 60,
-                        color: Color(0xFF2E7D32),
+                        color: Color(0xFF1976D2),
                       ),
                     ),
                   ),
@@ -116,7 +116,7 @@ class _SignupPageState extends State<SignupPage> {
                   const AppText.hero(
                     "Create Account",
                     textAlign: TextAlign.center,
-                    color: Color(0xFF1B5E20),
+                    color: Color(0xFF0D47A1),
                   ),
                   const SizedBox(height: 8),
                   AppText.body(
@@ -213,14 +213,14 @@ class _SignupPageState extends State<SignupPage> {
                   ElevatedButton(
                     onPressed: _isLoading ? null : _signUp,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E7D32),
+                      backgroundColor: const Color(0xFF1976D2),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 18),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
                       elevation: 4,
-                      shadowColor: Colors.green.withOpacity(0.4),
+                      shadowColor: Colors.blue.withOpacity(0.4),
                     ),
                     child: _isLoading
                         ? const SizedBox(
@@ -253,7 +253,7 @@ class _SignupPageState extends State<SignupPage> {
                         },
                         child: const AppText.action(
                           'Sign In',
-                          color: Color(0xFF2E7D32),
+                          color: Color(0xFF1976D2),
                         ),
                       ),
                     ],
