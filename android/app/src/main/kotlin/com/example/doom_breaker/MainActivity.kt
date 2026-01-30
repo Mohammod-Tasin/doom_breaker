@@ -149,6 +149,50 @@ class MainActivity: FlutterActivity() {
                     requestAutoStartPermission()
                     result.success(true)
                 }
+                "getInstalledApps" -> {
+                    // Get list of installed apps (excluding system apps by default)
+                    val includeSystem = call.argument<Boolean>("includeSystem") ?: false
+                    val apps = UsageStatsHelper.getInstalledApps(this, includeSystem)
+                    val appList = apps.map { appInfo ->
+                        // Convert drawable icon to base64 PNG
+                        val iconBase64 = try {
+                            val drawable = appInfo.icon
+                            val bitmap: android.graphics.Bitmap
+                            
+                            // Handle different drawable types including AdaptiveIconDrawable
+                            if (drawable is android.graphics.drawable.BitmapDrawable) {
+                                bitmap = drawable.bitmap
+                            } else {
+                                // For AdaptiveIconDrawable and other types
+                                val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 96
+                                val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 96
+                                bitmap = android.graphics.Bitmap.createBitmap(
+                                    width, height, android.graphics.Bitmap.Config.ARGB_8888
+                                )
+                                val canvas = android.graphics.Canvas(bitmap)
+                                drawable.setBounds(0, 0, canvas.width, canvas.height)
+                                drawable.draw(canvas)
+                            }
+                            
+                            // Scale down if needed for performance
+                            val scaledBitmap = android.graphics.Bitmap.createScaledBitmap(bitmap, 72, 72, true)
+                            
+                            val stream = java.io.ByteArrayOutputStream()
+                            scaledBitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, stream)
+                            android.util.Base64.encodeToString(stream.toByteArray(), android.util.Base64.NO_WRAP)
+                        } catch (e: Exception) {
+                            android.util.Log.e("MainActivity", "Failed to encode icon for ${appInfo.packageName}: ${e.message}")
+                            ""
+                        }
+                        
+                        mapOf(
+                            "packageName" to appInfo.packageName,
+                            "appName" to appInfo.appName,
+                            "icon" to iconBase64
+                        )
+                    }
+                    result.success(appList)
+                }
                 else -> result.notImplemented()
             }
         }

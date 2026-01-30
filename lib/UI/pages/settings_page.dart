@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
 import 'package:doom_breaker/UI/Widgets/app_text.dart';
 import 'package:doom_breaker/models/user_profile.dart';
 import 'package:doom_breaker/services/storage_service.dart';
@@ -15,6 +17,10 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  static const _permissionsChannel = MethodChannel(
+    'com.doombreaker/permissions',
+  );
+
   final StorageService _storage = StorageService();
   final SyncService _sync = SyncService();
 
@@ -37,17 +43,6 @@ class _SettingsPageState extends State<SettingsPage> {
   int _scrollThreshold = 50;
   int _cooldownMinutes = 15;
   bool _enableFocusMode = false;
-
-  final List<String> _commonApps = [
-    'Instagram',
-    'TikTok',
-    'YouTube',
-    'Facebook',
-    'Twitter/X',
-    'Reddit',
-    'Snapchat',
-    'Netflix',
-  ];
 
   @override
   void initState() {
@@ -514,53 +509,75 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _showAppSelectionDialog() async {
-    // Filter out already selected apps
-    final availableApps = _commonApps
-        .where((app) => !_distractingApps.contains(app))
-        .toList();
-
-    if (availableApps.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All common apps have been added'),
-          backgroundColor: Color(0xFF1976D2),
-        ),
-      );
-      return;
-    }
-
-    final selected = await showDialog<String>(
+    // Show loading dialog while fetching apps
+    showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select App'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: availableApps.length,
-            itemBuilder: (context, index) {
-              final app = availableApps[index];
-              return ListTile(
-                leading: const Icon(Icons.apps, color: Color(0xFF1976D2)),
-                title: Text(app),
-                onTap: () => Navigator.pop(context, app),
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-        ],
-      ),
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
-    if (selected != null) {
-      setState(() {
-        _distractingApps = [..._distractingApps, selected];
-      });
+    try {
+      // Fetch installed apps from native Android
+      final List<dynamic> result = await _permissionsChannel.invokeMethod(
+        'getInstalledApps',
+        {'includeSystem': false},
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.pop(context);
+
+      // Convert to list of app info with icons
+      final installedApps = result.map((app) {
+        final map = app as Map<dynamic, dynamic>;
+        return {
+          'packageName': map['packageName'] as String,
+          'appName': map['appName'] as String,
+          'icon': map['icon'] as String? ?? '',
+        };
+      }).toList();
+
+      // Filter out already selected apps (by package name)
+      final availableApps = installedApps
+          .where((app) => !_distractingApps.contains(app['packageName']))
+          .toList();
+
+      if (availableApps.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('All apps have been added'),
+              backgroundColor: Color(0xFF1976D2),
+            ),
+          );
+        }
+        return;
+      }
+
+      // Show app selection dialog with search
+      if (!mounted) return;
+      final selected = await showDialog<Map<String, String>>(
+        context: context,
+        builder: (context) => _AppSelectionDialog(availableApps: availableApps),
+      );
+
+      if (selected != null) {
+        setState(() {
+          // Store package name for actual blocking
+          _distractingApps = [..._distractingApps, selected['packageName']!];
+        });
+      }
+    } catch (e) {
+      // Close loading dialog if still showing
+      if (mounted) Navigator.pop(context);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load apps: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -647,6 +664,150 @@ class _SettingsPageState extends State<SettingsPage> {
         AppText.bodySmall(
           'Time between interventions',
           color: const Color(0xFF546E7A),
+        ),
+      ],
+    );
+  }
+}
+
+/// Dialog for selecting apps with search and icons
+class _AppSelectionDialog extends StatefulWidget {
+  final List<Map<String, String>> availableApps;
+
+  const _AppSelectionDialog({required this.availableApps});
+
+  @override
+  State<_AppSelectionDialog> createState() => _AppSelectionDialogState();
+}
+
+class _AppSelectionDialogState extends State<_AppSelectionDialog> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredApps = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredApps = widget.availableApps;
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterApps(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        _filteredApps = widget.availableApps;
+      } else {
+        _filteredApps = widget.availableApps.where((app) {
+          final appName = app['appName']!.toLowerCase();
+          final packageName = app['packageName']!.toLowerCase();
+          final searchLower = query.toLowerCase();
+          return appName.contains(searchLower) ||
+              packageName.contains(searchLower);
+        }).toList();
+      }
+    });
+  }
+
+  Widget _buildAppIcon(String iconBase64) {
+    if (iconBase64.isEmpty) {
+      return const Icon(Icons.android, color: Color(0xFF1976D2), size: 40);
+    }
+    try {
+      final bytes = base64Decode(iconBase64);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.memory(
+          bytes,
+          width: 40,
+          height: 40,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return const Icon(
+              Icons.android,
+              color: Color(0xFF1976D2),
+              size: 40,
+            );
+          },
+        ),
+      );
+    } catch (e) {
+      return const Icon(Icons.android, color: Color(0xFF1976D2), size: 40);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Select App'),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: 450,
+        child: Column(
+          children: [
+            // Search bar
+            TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search apps...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+              ),
+              onChanged: _filterApps,
+            ),
+            const SizedBox(height: 12),
+            // App list
+            Expanded(
+              child: _filteredApps.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No apps found',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    )
+                  : ListView.builder(
+                      itemCount: _filteredApps.length,
+                      itemBuilder: (context, index) {
+                        final app = _filteredApps[index];
+                        return ListTile(
+                          leading: _buildAppIcon(app['icon']!),
+                          title: Text(
+                            app['appName']!,
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          subtitle: Text(
+                            app['packageName']!,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () => Navigator.pop(context, {
+                            'packageName': app['packageName']!,
+                            'appName': app['appName']!,
+                          }),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
         ),
       ],
     );
