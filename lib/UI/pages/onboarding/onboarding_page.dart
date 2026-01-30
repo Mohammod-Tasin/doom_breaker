@@ -28,9 +28,73 @@ class _OnboardingPageState extends State<OnboardingPage> {
   TimeOfDay _institutionEnd = const TimeOfDay(hour: 14, minute: 0);
   int _focusGoalMinutes = 360; // 6 hours
 
+  // NEW: Institution & Country form data
+  final TextEditingController _institutionController = TextEditingController();
+  final TextEditingController _majorController = TextEditingController();
+  String _selectedCountry = 'Bangladesh';
+  String _institutionType = 'University';
+  int _yearOfStudy = 1;
+
+  final List<String> _countries = [
+    'Afghanistan',
+    'Albania',
+    'Algeria',
+    'Argentina',
+    'Australia',
+    'Austria',
+    'Bangladesh',
+    'Belgium',
+    'Brazil',
+    'Canada',
+    'China',
+    'Denmark',
+    'Egypt',
+    'Finland',
+    'France',
+    'Germany',
+    'Greece',
+    'India',
+    'Indonesia',
+    'Iran',
+    'Iraq',
+    'Ireland',
+    'Israel',
+    'Italy',
+    'Japan',
+    'Kenya',
+    'Malaysia',
+    'Mexico',
+    'Netherlands',
+    'New Zealand',
+    'Nigeria',
+    'Norway',
+    'Pakistan',
+    'Philippines',
+    'Poland',
+    'Portugal',
+    'Russia',
+    'Saudi Arabia',
+    'Singapore',
+    'South Africa',
+    'South Korea',
+    'Spain',
+    'Sweden',
+    'Switzerland',
+    'Thailand',
+    'Turkey',
+    'Ukraine',
+    'United Arab Emirates',
+    'United Kingdom',
+    'United States',
+    'Vietnam',
+    'Other',
+  ];
+
   @override
   void dispose() {
     _pageController.dispose();
+    _institutionController.dispose();
+    _majorController.dispose();
     super.dispose();
   }
 
@@ -53,9 +117,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
       displayName: user.email?.split('@').first ?? 'User',
       email: user.email ?? '',
 
-      // Academic info (defaults for now, will add UI in next step)
-      institution: '', // Will be collected in new onboarding page
-      country: '', // Will be collected in new onboarding page
+      // Academic info (from institution page)
+      institution: _institutionController.text.trim(),
+      country: _selectedCountry,
+      institutionType: _institutionType,
+      major: _majorController.text.trim(),
+      yearOfStudy: _yearOfStudy,
       // Schedule
       studyHours: TimeRange(
         start: _formatTimeOfDay(_studyStart),
@@ -95,11 +162,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Row(
-                children: List.generate(3, (index) {
+                children: List.generate(4, (index) {
+                  // Changed from 3 to 4
                   return Expanded(
                     child: Container(
                       height: 4,
-                      margin: EdgeInsets.only(right: index < 2 ? 8 : 0),
+                      margin: EdgeInsets.only(
+                        right: index < 3 ? 8 : 0,
+                      ), // Changed from 2 to 3
                       decoration: BoxDecoration(
                         color: index <= _currentPage
                             ? const Color(0xFF1976D2)
@@ -119,6 +189,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 onPageChanged: (page) => setState(() => _currentPage = page),
                 children: [
                   _buildWelcomePage(),
+                  _buildInstitutionPage(), // NEW: Institution & Country page
                   _buildSchedulePage(),
                   _buildGoalPage(),
                 ],
@@ -149,7 +220,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                   ElevatedButton(
                     onPressed: () {
-                      if (_currentPage < 2) {
+                      if (_currentPage < 3) {
+                        // Changed from 2 to 3
                         _pageController.nextPage(
                           duration: const Duration(milliseconds: 300),
                           curve: Curves.easeInOut,
@@ -172,7 +244,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                     ),
                     child: AppText.action(
-                      _currentPage < 2 ? 'Next' : 'Get Started',
+                      _currentPage < 3
+                          ? 'Next'
+                          : 'Get Started', // Changed from 2 to 3
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
@@ -246,6 +320,135 @@ class _OnboardingPageState extends State<OnboardingPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildInstitutionPage() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 32),
+
+          // Header
+          const AppText.hero(
+            'Tell us about yourself',
+            color: Color(0xFF0D47A1),
+          ),
+          const SizedBox(height: 8),
+          AppText.body(
+            'This helps us personalize your experience',
+            color: const Color(0xFF546E7A),
+          ),
+          const SizedBox(height: 40),
+
+          // Institution Name Field
+          TextFormField(
+            controller: _institutionController,
+            decoration: const InputDecoration(
+              labelText: 'Institution Name',
+              hintText: 'e.g., Dhaka University',
+              prefixIcon: Icon(Icons.school, color: Color(0xFF1976D2)),
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: 20),
+
+          // Country Dropdown
+          DropdownButtonFormField<String>(
+            value: _selectedCountry,
+            decoration: const InputDecoration(
+              labelText: 'Country',
+              prefixIcon: Icon(Icons.public, color: Color(0xFF1976D2)),
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            items: _countries.map((country) {
+              return DropdownMenuItem(value: country, child: Text(country));
+            }).toList(),
+            onChanged: (value) => setState(() => _selectedCountry = value!),
+          ),
+          const SizedBox(height: 20),
+
+          // Institution Type
+          DropdownButtonFormField<String>(
+            value: _institutionType,
+            decoration: const InputDecoration(
+              labelText: 'Institution Type',
+              prefixIcon: Icon(Icons.category, color: Color(0xFF1976D2)),
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            items: ['University', 'School', 'Workplace', 'Other']
+                .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                .toList(),
+            onChanged: (value) => setState(() => _institutionType = value!),
+          ),
+          const SizedBox(height: 20),
+
+          // Major (Optional)
+          TextFormField(
+            controller: _majorController,
+            decoration: const InputDecoration(
+              labelText: 'Major / Field of Study (Optional)',
+              hintText: 'e.g., Computer Science',
+              prefixIcon: Icon(Icons.book, color: Color(0xFF1976D2)),
+              border: OutlineInputBorder(),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            textCapitalization: TextCapitalization.words,
+          ),
+          const SizedBox(height: 20),
+
+          // Year of Study (if University)
+          if (_institutionType == 'University')
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const AppText.action('Year of Study', color: Color(0xFF0D47A1)),
+                const SizedBox(height: 8),
+                SegmentedButton<int>(
+                  segments: const [
+                    ButtonSegment(value: 1, label: Text('1st')),
+                    ButtonSegment(value: 2, label: Text('2nd')),
+                    ButtonSegment(value: 3, label: Text('3rd')),
+                    ButtonSegment(value: 4, label: Text('4th+')),
+                  ],
+                  selected: {_yearOfStudy},
+                  onSelectionChanged: (Set<int> selection) {
+                    setState(() => _yearOfStudy = selection.first);
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
+                      if (states.contains(MaterialState.selected)) {
+                        return const Color(0xFF1976D2);
+                      }
+                      return Colors.white;
+                    }),
+                    foregroundColor: MaterialStateProperty.resolveWith<Color>((
+                      states,
+                    ) {
+                      if (states.contains(MaterialState.selected)) {
+                        return Colors.white;
+                      }
+                      return const Color(0xFF1976D2);
+                    }),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+        ],
       ),
     );
   }

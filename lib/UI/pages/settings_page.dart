@@ -31,6 +31,24 @@ class _SettingsPageState extends State<SettingsPage> {
   late TimeOfDay _institutionEnd;
   late int _focusGoalMinutes;
 
+  // NEW: Distracting Apps & Intervention Preferences (Step 0.4-0.6)
+  List<String> _distractingApps = [];
+  String _interventionStyle = 'Moderate';
+  int _scrollThreshold = 50;
+  int _cooldownMinutes = 15;
+  bool _enableFocusMode = false;
+
+  final List<String> _commonApps = [
+    'Instagram',
+    'TikTok',
+    'YouTube',
+    'Facebook',
+    'Twitter/X',
+    'Reddit',
+    'Snapchat',
+    'Netflix',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -59,6 +77,13 @@ class _SettingsPageState extends State<SettingsPage> {
     _institutionStart = _parseTime(profile.institutionHours.start);
     _institutionEnd = _parseTime(profile.institutionHours.end);
     _focusGoalMinutes = profile.focusGoalMinutes;
+
+    // NEW: Load behavioral preferences (Step 0.4-0.6)
+    _distractingApps = List<String>.from(profile.distractingApps);
+    _interventionStyle = profile.interventionStyle;
+    _scrollThreshold = profile.scrollThreshold;
+    _cooldownMinutes = profile.cooldownMinutes;
+    _enableFocusMode = profile.enableFocusMode;
   }
 
   TimeOfDay _parseTime(String timeStr) {
@@ -90,6 +115,12 @@ class _SettingsPageState extends State<SettingsPage> {
           end: _formatTime(_institutionEnd),
         ),
         focusGoalMinutes: _focusGoalMinutes,
+        // NEW: Save behavioral preferences (Step 0.4-0.6)
+        distractingApps: _distractingApps,
+        interventionStyle: _interventionStyle,
+        scrollThreshold: _scrollThreshold,
+        cooldownMinutes: _cooldownMinutes,
+        enableFocusMode: _enableFocusMode,
       );
 
       // Sync to Supabase
@@ -196,6 +227,18 @@ class _SettingsPageState extends State<SettingsPage> {
                 setState(() => _focusGoalMinutes = value.round());
               },
             ),
+
+            // ========== STEP 0.6: FOCUS MODE TOGGLE ==========
+            const SizedBox(height: 32),
+            _buildFocusModeSection(),
+
+            // ========== STEP 0.4: DISTRACTING APPS MANAGER ==========
+            const SizedBox(height: 32),
+            _buildDistractingAppsSection(),
+
+            // ========== STEP 0.5: INTERVENTION PREFERENCES ==========
+            const SizedBox(height: 32),
+            _buildInterventionPreferences(),
 
             const SizedBox(height: 32),
             _buildSectionHeader('Permissions'),
@@ -342,6 +385,270 @@ class _SettingsPageState extends State<SettingsPage> {
           ],
         ),
       ),
+    );
+  }
+
+  // ========== STEP 0.6: FOCUS MODE TOGGLE ==========
+  Widget _buildFocusModeSection() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _enableFocusMode ? const Color(0xFFE3F2FD) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: _enableFocusMode
+              ? const Color(0xFF1976D2)
+              : Colors.blue.withOpacity(0.1),
+          width: 2,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.psychology,
+            color: _enableFocusMode
+                ? const Color(0xFF1976D2)
+                : const Color(0xFF546E7A),
+            size: 32,
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText.action(
+                  'Focus Mode',
+                  color: _enableFocusMode
+                      ? const Color(0xFF0D47A1)
+                      : const Color(0xFF546E7A),
+                ),
+                const SizedBox(height: 4),
+                AppText.bodySmall(
+                  _enableFocusMode
+                      ? 'Active - Stricter monitoring enabled'
+                      : 'Inactive - Normal monitoring',
+                  color: const Color(0xFF546E7A),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: _enableFocusMode,
+            activeColor: const Color(0xFF1976D2),
+            onChanged: (value) {
+              setState(() => _enableFocusMode = value);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ========== STEP 0.4: DISTRACTING APPS MANAGER ==========
+  Widget _buildDistractingAppsSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Distracting Apps'),
+        const SizedBox(height: 8),
+        AppText.bodySmall(
+          'Select apps that distract you the most',
+          color: const Color(0xFF546E7A),
+        ),
+        const SizedBox(height: 16),
+
+        // List of selected apps as chips
+        if (_distractingApps.isNotEmpty)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _distractingApps.map((app) {
+              return Chip(
+                label: Text(app),
+                deleteIcon: const Icon(Icons.close, size: 18),
+                onDeleted: () => _removeDistractingApp(app),
+                backgroundColor: const Color(0xFFE3F2FD),
+                labelStyle: const TextStyle(color: Color(0xFF0D47A1)),
+                deleteIconColor: const Color(0xFF1976D2),
+              );
+            }).toList(),
+          ),
+
+        if (_distractingApps.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.grey[50],
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[200]!),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, color: Colors.grey[400], size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppText.bodySmall(
+                    'No apps selected yet. Add apps to monitor.',
+                    color: Colors.grey[500],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        const SizedBox(height: 16),
+
+        // Add app button
+        OutlinedButton.icon(
+          onPressed: _showAppSelectionDialog,
+          icon: const Icon(Icons.add),
+          label: const Text('Add App'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: const Color(0xFF1976D2),
+            side: const BorderSide(color: Color(0xFF1976D2)),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _showAppSelectionDialog() async {
+    // Filter out already selected apps
+    final availableApps = _commonApps
+        .where((app) => !_distractingApps.contains(app))
+        .toList();
+
+    if (availableApps.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('All common apps have been added'),
+          backgroundColor: Color(0xFF1976D2),
+        ),
+      );
+      return;
+    }
+
+    final selected = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select App'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: availableApps.length,
+            itemBuilder: (context, index) {
+              final app = availableApps[index];
+              return ListTile(
+                leading: const Icon(Icons.apps, color: Color(0xFF1976D2)),
+                title: Text(app),
+                onTap: () => Navigator.pop(context, app),
+              );
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+
+    if (selected != null) {
+      setState(() {
+        _distractingApps = [..._distractingApps, selected];
+      });
+    }
+  }
+
+  void _removeDistractingApp(String app) {
+    setState(() {
+      _distractingApps = _distractingApps.where((a) => a != app).toList();
+    });
+  }
+
+  // ========== STEP 0.5: INTERVENTION PREFERENCES ==========
+  Widget _buildInterventionPreferences() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSectionHeader('Intervention Preferences'),
+        const SizedBox(height: 16),
+
+        // Intervention Style
+        AppText.action('Intervention Style', color: const Color(0xFF1976D2)),
+        const SizedBox(height: 8),
+        SegmentedButton<String>(
+          segments: const [
+            ButtonSegment(value: 'Gentle', label: Text('Gentle')),
+            ButtonSegment(value: 'Moderate', label: Text('Moderate')),
+            ButtonSegment(value: 'Strict', label: Text('Strict')),
+          ],
+          selected: {_interventionStyle},
+          onSelectionChanged: (Set<String> selection) {
+            setState(() => _interventionStyle = selection.first);
+          },
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
+                return const Color(0xFF1976D2);
+              }
+              return Colors.white;
+            }),
+            foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.selected)) {
+                return Colors.white;
+              }
+              return const Color(0xFF1976D2);
+            }),
+          ),
+        ),
+        const SizedBox(height: 24),
+
+        // Scroll Sensitivity
+        AppText.body('Scroll Sensitivity: $_scrollThreshold%'),
+        Slider(
+          value: _scrollThreshold.toDouble(),
+          min: 0,
+          max: 100,
+          divisions: 20,
+          activeColor: const Color(0xFF1976D2),
+          thumbColor: const Color(0xFF1976D2),
+          inactiveColor: const Color(0xFF1976D2).withOpacity(0.2),
+          label: '$_scrollThreshold%',
+          onChanged: (value) {
+            setState(() => _scrollThreshold = value.toInt());
+          },
+        ),
+        AppText.bodySmall(
+          'Higher = more scrolls needed to trigger intervention',
+          color: const Color(0xFF546E7A),
+        ),
+        const SizedBox(height: 24),
+
+        // Cooldown Duration
+        AppText.body('Cooldown Duration: $_cooldownMinutes min'),
+        Slider(
+          value: _cooldownMinutes.toDouble(),
+          min: 5,
+          max: 60,
+          divisions: 11,
+          activeColor: const Color(0xFF1976D2),
+          thumbColor: const Color(0xFF1976D2),
+          inactiveColor: const Color(0xFF1976D2).withOpacity(0.2),
+          label: '$_cooldownMinutes min',
+          onChanged: (value) {
+            setState(() => _cooldownMinutes = value.toInt());
+          },
+        ),
+        AppText.bodySmall(
+          'Time between interventions',
+          color: const Color(0xFF546E7A),
+        ),
+      ],
     );
   }
 }
