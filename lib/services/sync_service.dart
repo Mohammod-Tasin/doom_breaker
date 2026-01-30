@@ -26,14 +26,23 @@ class SyncService {
 
   // Sync user profile to cloud
   Future<void> syncUserProfile(UserProfile profile) async {
-    await _supabase.from('users').upsert(
-      {
-        'user_id': profile.userId,
-        'profile': profile.toJson(),
-        'updated_at': DateTime.now().toIso8601String(),
-      },
-      onConflict: 'user_id', // Specify conflict column for upsert
-    );
+    await _supabase.from('users').upsert({
+      'user_id': profile.userId,
+      'profile': profile.toJson(),
+      // Individual columns for queryability/analytics
+      'institution': profile.institution,
+      'country': profile.country,
+      'institution_type': profile.institutionType,
+      'major': profile.major,
+      'year_of_study': profile.yearOfStudy,
+      'distracting_apps': profile.distractingApps,
+      'intervention_style': profile.interventionStyle,
+      'enable_focus_mode': profile.enableFocusMode,
+      'scroll_threshold': profile.scrollThreshold,
+      'cooldown_minutes': profile.cooldownMinutes,
+      'days_used': profile.daysUsed,
+      'updated_at': DateTime.now().toIso8601String(),
+    }, onConflict: 'user_id');
 
     await _storage.saveUserProfile(profile);
     await _storage.setLastSyncTime(DateTime.now());
